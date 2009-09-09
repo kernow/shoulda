@@ -21,6 +21,43 @@ module Shoulda # :nodoc:
     # Would produce 3 tests for the +show+ action
     module Macros
 
+      # Macro that creates a test asserting a form is present in the view
+      # with a given action and method.
+      #
+      # The passed description will be used when generating the test name.
+      #
+      # Example:
+      #
+      #   should_render_a_form_to("update a user", :method => "put") { user_path(@user) }
+      def should_render_a_form_to(description, options = {}, &block)
+        should "render a form to #{description}" do
+          # puts @response.body
+          expected_url  = instance_eval(&block)
+          puts "expected_url: #{expected_url}"
+          form_method   = case options[:method]
+            when "post", "put", "delete" : "post"
+            else "get"
+            end
+          puts "options[:method]: #{options[:method]}"
+          puts "form_method: #{form_method}"
+          assert_select "form[action=?][method=?]",
+                        expected_url,
+                        form_method,
+                        true,
+                        "The template doesn't contain a <form> element with the action #{expected_url}" do
+
+            unless %w{get post}.include? options[:method]
+              puts "checking for hidden method field"
+              assert_select "input[name=_method][value=?]",
+                            options[:method],
+                            true,
+                            "The template doesn't contain a <form> for #{expected_url} using the method #{options[:method]}"
+            end
+          end
+        end
+      end
+
+
       # Macro that creates a test asserting that the rendered view contains a <form> element.
       #
       # Deprecated.

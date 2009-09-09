@@ -92,11 +92,33 @@ class PostsControllerTest < ActionController::TestCase
     end
 
     context "on GET to #new" do
-      setup { get :new, :user_id => users(:first) }
+      setup do
+        @user = users(:first)
+        get :new, :user_id => @user.id
+      end
       should_render_without_layout
       should_not_set_the_flash
       should_render_a_form
+      should_render_a_form_to("create a new post", {:method => "post"}) { new_user_post_path(@user.id) }
+      
+      should_fail do
+        should_render_a_form_to("update a post", {:method => "put"}) { user_post_path( :user_id => @user.id, :id => 1) }
+      end
     end
+    
+    context "on GET to #edit" do
+      setup do
+        @user = users(:first)
+        get :edit, :user_id => @user.id, :id => @post.id
+      end
+      
+      should_render_a_form_to("update a post", {:method => "put"}) { user_post_path( :user_id => @user.id, :id => 1) }
+      
+      should_fail do
+        should_render_a_form_to("create a new post", {:method => "post"}) { new_user_post_path(@user.id) }
+      end
+    end
+    
 
     context "on POST to #create" do
       setup do
