@@ -40,8 +40,14 @@ module Shoulda # :nodoc:
                         expected_url,
                         form_method,
                         true,
-                        "The template doesn't contain a <form> element with the action #{expected_url}" do
-
+                        "The template doesn't contain a <form> element with the action #{expected_url}" do |elms|
+            
+            if options[:id]
+              elms.each do |elm|
+                assert_select elm, "##{options[:id]}", true, "The template doesn't contain a <form> element with the id #{options[:id]}"
+              end
+            end
+            
             unless %w{get post}.include? options[:method]
               assert_select "input[name=_method][value=?]",
                             options[:method],

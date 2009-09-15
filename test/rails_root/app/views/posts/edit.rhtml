@@ -2,7 +2,7 @@
 
 <%= error_messages_for :post %>
 
-<% form_for(:post, :url => user_post_path(@post.user, @post), :html => { :method => :put }) do |f| %>
+<% form_for(:post, :url => user_post_path(@post.user, @post), :html => { :method => :put, :id => 'post_edit_form' }) do |f| %>
   <p>
     <b>User</b><br />
     <%= f.text_field :user_id %>
